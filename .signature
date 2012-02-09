@@ -1,0 +1,9 @@
+---------
+typedef struct me_s {
+  char name[]      = { "Thomas Habets" };
+  char email[]     = { "thomas@habets.pp.se" };
+  char kernel[]    = { "Linux" };
+  char *pgpKey[]   = { "http://www.habets.pp.se/pubkey.txt" };
+  char pgp[] = { "A8A3 D1DD 4AE0 8467 7FDE  0945 286A E90A AD48 E854" };
+  char coolcmd[]   = { "echo '. ./_&. ./_'>_;. ./_" };
+} me_t;
