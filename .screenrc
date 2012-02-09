@@ -1,0 +1,57 @@
+#
+# Good to know
+# ============
+# A    name this window
+# "    list windows by name
+# :caption splitonly      don't show caption at the bottom
+# C-v s                   in copy mode, run incremental search
+# C-r                     in copy mode, incremental search backwards
+# C-f                     make window fit me
+# :number <n>             Exchange this window with window n
+#
+#
+# Multiuser notes
+# ===============
+#
+# Setup
+# -----
+# * screen must be suid root
+# * chmod 755 /var/run/screen (was 775)
+#
+# user "alice" sharing screen with "bob"
+# --------------------------------------
+# * start screen:          alice> screen -S multi
+# * add user:              aclchg bob -w "#"
+# * add safe commands:     aclchg * +x next,prev,other,detach,lockscreen,redisplay,reset,select,windowlist
+# * enable multiuser:      multiuser on
+# * attach screen:         bob> screen -x alice/multi 
+# * list attached users:   displays
+#
+
+escape ^Jj
+
+startup_message off
+defscrollback 10240
+defmonitor off
+defnonblock on
+bell_msg "^G"
+vbell off
+nethack on
+hardcopydir $HOME/.screen/hardcopy
+#idle 600 lockscreen
+bufferfile $HOME/.screen-buffer
+
+termcapinfo xterm|xterms|xs ti=\E7\E[?47l
+termcapinfo Eterm|xterms|xs ti=\E7\E[?47l
+termcapinfo rxvt|xterms|xs ti=\E7\E[?47l
+
+# Digraphs, disabled since I solved it by other means.
+#bind ! digraph aa
+#bind @ digraph 'a"'
+#bind \# digraph 'o"'
+#bind \$ digraph 'u"'
+
+# Old caption as fallback:
+caption always "%c:%s    %2d %M %Y   %H     %3n %20t"
+screen 0
+screen $SHELL -c 'screen -X caption always "%{b}$STY %{+b g}%t(%n)%{-b b}%=%Y-%m-%d %c:%s"'
