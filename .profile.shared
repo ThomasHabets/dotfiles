@@ -1,0 +1,78 @@
+# -*- sh -*-
+
+EDITOR=emacs
+PAGER=less
+PS_FORMAT=pid,user,tty,wchan:15,cmd
+
+# If this is a login shell.
+if [ ! "" = "$PS1" ]; then
+    # Check window size after every command.
+    shopt -s checkwinsize
+
+    # History file settings.
+    export HISTSIZE=1000000000
+    export HISTFILESIZE=1000000000
+    shopt -s histappend
+
+    # Unbreak C-s for incremental search.
+    stty -ixon
+
+    # Autocorrect directories.
+    shopt -s cdspell
+
+    # Don't allow others to write to terminal.
+    mesg n
+
+    if [ "$BASH" ]; then
+        PS1='\u@\h:\w\$ '
+    else
+        if [ "`id -u`" -eq 0 ];then
+            PS1='# '
+        else
+            PS1='$ '
+        fi
+    fi
+fi
+
+umask 022
+
+PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/X11R6/bin:$HOME/bin"
+PATH="${PATH}:/usr/games:/usr/local/bin:/usr/local/sbin"
+LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib"
+LD_LIBRARY_PATH=$(echo $LD_LIBRARY_PATH | sed \
+    -e 's/^:*//g' \
+    -e 's/:*$//g' \
+    -e 's/::*/:/g')
+
+# Aliases.
+alias gdb='gdb -q'
+
+case `uname -s` in
+    SunOS)
+	PATH="/opt/git/bin:$PATH"
+        PATH="/opt/csw/postgresql/bin:$PATH"
+        PATH="/usr/sfw/bin:$PATH"
+        PATH="/usr/sfw/sbin:$PATH"
+        PATH="/opt/csw/sbin:$PATH"
+        PATH="/opt/csw/bin:$PATH"
+        PATH="/opt/csw/gcc4/bin:$PATH"
+        PATH="$PATH:/usr/ccs/bin:/usr/openwin/bin:/usr/dt/bin"
+	;;
+    Linux|GNU/kFreeBSD)
+        alias ls='ls --color'
+        alias tl='clear;sudo iptables -n -v --line -L'
+        alias tl6='clear;sudo ip6tables -n -v --line -L'
+	;;
+    IRIX*)
+        PATH="/usr/freeware/bin:/usr/etc:/usr/bsd:$PATH:/usr/bin/X11"
+	stty intr ^C
+        stty susp ^Z
+	;;
+esac
+
+# Export.
+export PATH
+export EDITOR
+export PAGER
+export PS_FORMAT
+export LD_LIBRARY_PATH
