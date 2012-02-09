@@ -1,0 +1,19 @@
+# -*- sh -*-
+
+case "`tty`" in
+    /dev/tty[0-9])
+	clear
+	;;
+    /dev/console)
+	clear
+	;;
+    /dev/vc/[0-9])
+	clear
+	;;
+    /dev/ttyS[0-9])
+	clear
+	;;
+    /dev/tts/[0-9])
+	clear
+	;;
+esac
