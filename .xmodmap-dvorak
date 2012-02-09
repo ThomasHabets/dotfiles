@@ -1,0 +1,5 @@
+add    mod3 = Mode_switch
+keycode  66 = Mode_switch
+keycode  34 = slash question aring Aring
+keycode  47 = s S odiaeresis Odiaeresis
+keycode  48 = minus underscore adiaeresis Adiaeresis
