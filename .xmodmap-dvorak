@@ -3,3 +3,5 @@ keycode  66 = Mode_switch
 keycode  34 = slash question aring Aring
 keycode  47 = s S odiaeresis Odiaeresis
 keycode  48 = minus underscore adiaeresis Adiaeresis
+keycode  10 = 1 exclam U0CA0 U0CA0
+keycode  13 = 4 dollar sterling sterling
