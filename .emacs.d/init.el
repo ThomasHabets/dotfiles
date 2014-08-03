@@ -1,3 +1,7 @@
 (load-file "~/.emacs.d/autoload/magit.el")
+(load-file "~/.emacs.d/autoload/coding.el")
 (load-file "~/.emacs.d/autoload/pretty.el")
 (load-file "~/.emacs.d/autoload/navigation.el")
+(load-file "~/.emacs.d/autoload/go/go-mode-load.el")
+(load-file "~/.emacs.d/autoload/go/go-mode.el")
+(add-hook 'before-save-hook 'gofmt-before-save)
