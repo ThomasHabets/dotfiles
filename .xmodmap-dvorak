@@ -1,7 +1,81 @@
 add    mod3 = Mode_switch
 keycode  66 = Mode_switch
+
+!!!!
+! Numbers
+!!!!
+keycode  49 = grave asciitilde section section
+! look of disapproval
+keycode  10 = 1 exclam U0CA0 U0CA0
+keycode  11 = 2 at U0CA0 U0CA0
+! Pi
+keycode  12 = 3 numbersign U03C0 U03C0
+keycode  13 = 4 dollar sterling sterling
+! Euro
+keycode  14 = 5 percent U20AC U20AC
+keycode  15 = 6 asciicircum cent cent
+keycode  16 = 7 ampersand yen yen
+! per mille
+keycode  17 = 8 asterisk U2030 U2030
+! keycode  18 = 9 parenleft
+! infinity
+keycode  19 = 0 parenright U221E U221E
+! Music notes.
+keycode  20 = bracketleft braceleft U266C U266C
+keycode  21 = bracketright braceright U266B U266B
+
+!!!!
+! First alpha row.
+!!!!
+! emdash
+keycode  25 = comma less U2014 U2014
+! elipsis
+keycode  26 = period greater U2026 U2026
+keycode  27 = p P trademark trademark
+keycode  28 = y Y copyright copyright
+! celcius
+keycode  29 = f F U2103 U2103
+! radioactive
+keycode  30 = g G U2622 U2622
+! death
+keycode  31 = c C U2620 U2620
+! biohazard
+keycode  32 = r R U2623 U2623
+! interrobang
+keycode  33 = l L U203D U203D
 keycode  34 = slash question aring Aring
+! notEqual
+keycode  35 = equal plus U2260 U2260
+! keycode  36 = Return
+
+!!!!
+! Second alpha row
+!!!!
+! for all
+keycode  38 = a A U2200 U2200
+! N-ary summation
+keycode  39 = o O U2211 U2211
+! there exists
+keycode  40 = e E U2203 U2203
+! micro
+keycode  41 = u U U00B5 U00B5
+! aleph
+keycode  42 = i I U2135 U2135
+
 keycode  47 = s S odiaeresis Odiaeresis
 keycode  48 = minus underscore adiaeresis Adiaeresis
-keycode  10 = 1 exclam U0CA0 U0CA0
-keycode  13 = 4 dollar sterling sterling
+keycode  51 = backslash bar U00B1 U00B1
+
+!!!!
+! Third alpha row
+!!!!
+! hammer and sickle
+keycode  94 = less greater U262D U262D
+
+!!!!
+! Arrow keys
+!!!!
+keycode 111 = Up Up U2191
+keycode 113 = Left Left U2190 U2190
+keycode 114 = Right Right U2192 U2192
+keycode 116 = Down Down U2193 U2193
