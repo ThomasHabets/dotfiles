@@ -33,24 +33,38 @@ escape ^Jj
 startup_message off
 defscrollback 10240
 defmonitor off
+
+# Never block output just because another client is hung.
 defnonblock on
-bell_msg "^G"
+
+# Never hijack ^S
+defflow off
+
+# Audible beep and message, but no screen flash. 
+bell_msg "^GBell in window %n"
 vbell off
+
+# Funnier messages.
 nethack on
+
+# Never actually used these, but keeping them.
 hardcopydir $HOME/.screen/hardcopy
-#idle 600 lockscreen
 bufferfile $HOME/.screen-buffer
 
+#idle 600 lockscreen
+
+# Support some more terminals.
 termcapinfo xterm|xterms|xs ti=\E7\E[?47l
 termcapinfo Eterm|xterms|xs ti=\E7\E[?47l
 termcapinfo rxvt|xterms|xs ti=\E7\E[?47l
 
-# Digraphs, disabled since I solved it by other means.
+# Digraphs, disabled since I solved it with xmodmap.
 #bind ! digraph aa
 #bind @ digraph 'a"'
 #bind \# digraph 'o"'
 #bind \$ digraph 'u"'
 
+# New fancy bottom status line.
 # Old caption as fallback:
 caption always "%c:%s    %2d %M %Y   %H     %3n %20t"
 screen 0
