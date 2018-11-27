@@ -1,5 +1,6 @@
 add    mod3 = Mode_switch
 keycode  66 = Mode_switch
+keycode 108 = Mode_switch
 
 !!!!
 ! Numbers
@@ -27,6 +28,8 @@ keycode  21 = bracketright braceright U266B U266B
 !!!!
 ! First alpha row.
 !!!!
+! smart quotes
+keycode  24 = apostrophe quotedbl U201C U201D
 ! emdash
 keycode  25 = comma less U2014 U2014
 ! elipsis
@@ -61,9 +64,19 @@ keycode  40 = e E U2203 U2203
 keycode  41 = u U U00B5 U00B5
 ! aleph
 keycode  42 = i I U2135 U2135
-
+! Place of interest
+keycode  43 = d D U2318 U2318
+! Bomb
+keycode  44 = h H U1F4A3 U1F4A3
+! Thumb up
+keycode  45 = t T U1F44D U1F44D
+! Thumb down
+keycode  46 = n N U1F44E U1F44E
+! O with two dots
 keycode  47 = s S odiaeresis Odiaeresis
+! A with two dots
 keycode  48 = minus underscore adiaeresis Adiaeresis
+! Plusminus
 keycode  51 = backslash bar U00B1 U00B1
 
 !!!!
@@ -71,6 +84,11 @@ keycode  51 = backslash bar U00B1 U00B1
 !!!!
 ! hammer and sickle
 keycode  94 = less greater U262D U262D
+! Sqrt
+keycode  53 = q Q U221A U221A
+keycode  54 = j J U2640 U2640
+keycode  55 = k K U2642 U2642
+
 
 !!!!
 ! Arrow keys
