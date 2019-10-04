@@ -3,6 +3,7 @@
 EDITOR=emacs
 PAGER=less
 PS_FORMAT=pid,user,tty,wchan:15,cmd
+QUOTING_STYLE=literal
 
 # If this is a login shell.
 if [ ! "" = "$PS1" ]; then
@@ -36,8 +37,7 @@ fi
 
 umask 022
 
-PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/X11R6/bin:$HOME/bin"
-PATH="${PATH}:/usr/games:/usr/local/bin:/usr/local/sbin"
+PATH="${HOME}/bin:${PATH}:/usr/local/bin:/usr/local/sbin"
 LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib"
 LD_LIBRARY_PATH=$(echo $LD_LIBRARY_PATH | sed \
     -e 's/^:*//g' \
@@ -56,7 +56,7 @@ case `uname -s` in
         PATH="/opt/csw/sbin:$PATH"
         PATH="/opt/csw/bin:$PATH"
         PATH="/opt/csw/gcc4/bin:$PATH"
-        PATH="$PATH:/usr/ccs/bin:/usr/openwin/bin:/usr/dt/bin"
+        PATH="${PATH}:/usr/ccs/bin:/usr/openwin/bin:/usr/dt/bin"
 	;;
     Linux|GNU/kFreeBSD)
         alias ls='ls --color'
@@ -70,9 +70,20 @@ case `uname -s` in
 	;;
 esac
 
+#
+# Tmux stuff
+#
+function a() {
+  tmux a -t "$1"
+}
+function n() {
+  tmux new -t "$1"
+}
+
 # Export.
 export PATH
 export EDITOR
 export PAGER
 export PS_FORMAT
 export LD_LIBRARY_PATH
+export QUOTING_STYLE
