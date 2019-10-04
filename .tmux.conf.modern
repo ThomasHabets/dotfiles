@@ -1,0 +1,3 @@
+# Put in ~/.tmux.conf.local
+
+set -g window-size latest
