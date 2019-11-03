@@ -11,8 +11,6 @@ if [ ! "" = "$PS1" ]; then
     shopt -s checkwinsize
 
     # History file settings.
-    export HISTSIZE=1000000000
-    export HISTFILESIZE=1000000000
     shopt -s histappend
 
     # Unbreak C-s for incremental search.
@@ -68,6 +66,8 @@ case `uname -s` in
         PATH="${PATH}:/usr/ccs/bin:/usr/openwin/bin:/usr/dt/bin"
 	;;
     Linux|GNU/kFreeBSD)
+        export HISTSIZE=1000000000
+        export HISTFILESIZE=1000000000
         alias ls='ls --color'
         alias tl='clear;sudo iptables -n -v --line -L'
         alias tl6='clear;sudo ip6tables -n -v --line -L'
@@ -77,6 +77,11 @@ case `uname -s` in
 	stty intr ^C
         stty susp ^Z
 	;;
+    OpenBSD)
+        # OpenBSD /bin/sh stores this in RAM.
+        export HISTSIZE=5000
+        export HISTFILESIZE=10000000
+        ;;
 esac
 
 #
