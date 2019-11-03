@@ -46,7 +46,7 @@ fi
 
 umask 022
 
-PATH="${HOME}/bin:${PATH}:/usr/local/bin:/usr/local/sbin"
+PATH="${HOME}/bin:${PATH}:/sbin:/usr/sbin:/usr/local/bin:/usr/local/sbin"
 LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/usr/local/lib"
 LD_LIBRARY_PATH=$(echo $LD_LIBRARY_PATH | sed \
     -e 's/^:*//g' \
@@ -96,3 +96,6 @@ export PAGER
 export PS_FORMAT
 export LD_LIBRARY_PATH
 export QUOTING_STYLE
+if [ -e "$HOME/.profile.local" ]; then
+    source "$HOME/.profile.local"
+fi
