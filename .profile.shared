@@ -1,6 +1,8 @@
 # -*- sh -*-
 
 EDITOR=emacs
+VISUAL=emacs
+P4DIFF='diff -Nu'
 PAGER=less
 PS_FORMAT=pid,user,tty,wchan:15,cmd
 QUOTING_STYLE=literal
@@ -98,6 +100,8 @@ function l() { tmux ls; }
 export PATH
 export EDITOR
 export PAGER
+export VISUAL
+export P4DIFF
 export PS_FORMAT
 export LD_LIBRARY_PATH
 export QUOTING_STYLE
