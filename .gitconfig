@@ -1,0 +1,14 @@
+[color]
+	diff = auto
+	ui = auto
+[user]
+	name = Thomas Habets
+	email = thomas@habets.se
+[push]
+	default = simple
+#[commit]
+#	gpgsign = true
+[alias]
+	fu = diff-tree --no-commit-id --name-only -r upstream/master..HEAD
+	fo = diff-tree --no-commit-id --name-only -r origin/master..HEAD
+	ls = diff-tree --no-commit-id --name-only -r
