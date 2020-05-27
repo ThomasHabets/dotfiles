@@ -55,6 +55,12 @@ LD_LIBRARY_PATH=$(echo $LD_LIBRARY_PATH | sed \
 
 # Aliases.
 alias gdb='gdb -q'
+function end() {
+  sed "/$1/q"
+}
+function begin() {
+  sed -n "/$1/,\$p"
+}
 
 case `uname -s` in
     SunOS)
