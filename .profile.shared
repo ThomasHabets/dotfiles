@@ -111,6 +111,7 @@ export P4DIFF
 export PS_FORMAT
 export LD_LIBRARY_PATH
 export QUOTING_STYLE
+export GPSD_UNITS=metric
 if [ -e "$HOME/.profile.local" ]; then
     source "$HOME/.profile.local"
 fi
