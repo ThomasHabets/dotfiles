@@ -80,7 +80,7 @@ input "*" {
 #
     # Start a terminal
     bindsym $mod+Return exec $term
-    bindsym $mod+c exec google-chrome
+    bindsym $mod+c exec $HOME/bin/chrome
 
     # Kill focused window
     bindsym $mod+Shift+q kill
