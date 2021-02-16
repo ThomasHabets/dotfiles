@@ -248,3 +248,4 @@ bar {
 for_window [class="Display-im6.q16" instance="display-im6.q16"] floating enable
 
 include /etc/sway/config.d/*
+include sway-local.conf
