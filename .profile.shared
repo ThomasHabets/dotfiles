@@ -116,3 +116,4 @@ export LC_TIME=C
 if [ -e "$HOME/.profile.local" ]; then
     source "$HOME/.profile.local"
 fi
+export SSH_AUTH_SOCK="$HOME/var/run/ssh-agent.sock"
