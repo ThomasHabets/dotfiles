@@ -185,12 +185,12 @@ bindsym $mod+Shift+minus move scratchpad
 bindsym $mod+minus scratchpad show
 
 # Special keys
-bindsym XF86AudioRaiseVolume  exec pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
-bindsym XF86AudioLowerVolume  exec pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
-bindsym XF86AudioMute         exec pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
-bindsym XF86AudioMicMute      exec pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
-bindsym XF86MonBrightnessUp   exec light -A 5
-bindsym XF86MonBrightnessDown exec light -U 5
+bindsym --locked XF86AudioRaiseVolume  exec pactl set-sink-volume @DEFAULT_SINK@ +10% && $refresh_i3status
+bindsym --locked XF86AudioLowerVolume  exec pactl set-sink-volume @DEFAULT_SINK@ -10% && $refresh_i3status
+bindsym --locked XF86AudioMute         exec pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh_i3status
+bindsym --locked XF86AudioMicMute      exec pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
+bindsym --locked XF86MonBrightnessUp   exec light -A 5
+bindsym --locked XF86MonBrightnessDown exec light -U 5
 
 # Locking
 bindsym $mod+BackSpace exec "swaylock -f -K -c 000000 --indicator-radius 300 --indicator-thickness 80 && systemctl suspend"
