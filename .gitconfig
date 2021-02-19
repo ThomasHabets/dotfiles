@@ -12,3 +12,5 @@
 	fu = diff-tree --no-commit-id --name-only -r upstream/master..HEAD
 	fo = diff-tree --no-commit-id --name-only -r origin/master..HEAD
 	ls = diff-tree --no-commit-id --name-only -r
+[pull]
+	rebase = true
