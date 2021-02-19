@@ -117,3 +117,4 @@ if [ -e "$HOME/.profile.local" ]; then
     source "$HOME/.profile.local"
 fi
 export SSH_AUTH_SOCK="$HOME/var/run/ssh-agent.sock"
+loginctl enable-linger $(whoami) 2> /dev/null
