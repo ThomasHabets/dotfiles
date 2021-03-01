@@ -4,6 +4,7 @@
 [user]
 	name = Thomas Habets
 	email = thomas@habets.se
+	useConfigOnly = true
 [push]
 	default = simple
 #[commit]
