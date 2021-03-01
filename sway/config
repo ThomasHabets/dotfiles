@@ -74,6 +74,15 @@ input "*" {
 bindsym $mod+Return exec $term
 bindsym $mod+c exec $HOME/bin/chrome
 
+# Screenshot
+#
+# #!/bin/bash
+# FILENAME="screenshot-`date +%F-%T`"
+# grim -g "$(slurp)" ~/Downloads/$FILENAME.png
+#
+#
+bindsym Print exec $HOME/bin/screenshot
+
 # Kill focused window
 bindsym $mod+Shift+q kill
 
