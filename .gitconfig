@@ -13,5 +13,6 @@
 	fu = diff-tree --no-commit-id --name-only -r upstream/master..HEAD
 	fo = diff-tree --no-commit-id --name-only -r origin/master..HEAD
 	ls = diff-tree --no-commit-id --name-only -r
+	stats = "! git log --shortstat --author='Thomas Habets' | grep -E 'fil(e|es) changed' | awk '{files+=$1; inserted+=$4; deleted+=$6} END {print \"files changed: \", files, \"lines inserted: \", inserted, \"lines deleted: \", deleted }'"
 [pull]
 	rebase = true
