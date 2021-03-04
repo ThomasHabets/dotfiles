@@ -272,6 +272,14 @@ bar {
 # Imagemagick.
 for_window [class="Display-im6.q16" instance="display-im6.q16"] floating enable
 
+# Chrome notifications when run in native Wayland.
+# Not optimal, but better than a tile.
+for_window [app_id="^$" title="^$"] {
+	   floating enable
+	   no_focus
+	   move position 0 0
+}
+
 include /etc/sway/config.d/*
 include sway-local.conf
 
