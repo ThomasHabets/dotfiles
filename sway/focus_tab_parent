@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# If the current window is in a tabbed group, focus to the tabbing container and
+# then run any commands provided as args to the script.
+#
 set -e
 BASE="$(dirname "$0")"
 
