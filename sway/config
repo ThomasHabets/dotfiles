@@ -24,7 +24,12 @@ set $menu dmenu_path | dmenu | xargs swaymsg exec --
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
 output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 
+# Look
 for_window [tiling] title_format "%title — %shell"
+#[tiling] border normal 4
+#              Title border    Border     Title text
+#client.focused #00FF00         #00FF00    #000000
+
 #
 # Example configuration:
 #
@@ -35,8 +40,7 @@ for_window [tiling] title_format "%title — %shell"
 
 ### Idle configuration
 #
-# Example configuration:
-#
+#inhibit_idle fullscreen # TODO: only a whitelist of windows, e.g. mplayer
 exec swayidle -w \
          timeout 900 'swaylock -K -f -c 000000 --indicator-radius 300 --indicator-thickness 80' \
          timeout 910 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
