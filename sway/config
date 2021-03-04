@@ -188,6 +188,17 @@ bindsym $mod+space focus mode_toggle
 
 # Move focus to the parent container
 bindsym $mod+a focus parent
+bindsym $mod+Tab focus next
+bindsym $mod+Shift+Tab focus prev
+#
+# Screenshots
+#
+
+# #!/bin/bash
+# FILENAME="screenshot-$(date +%F-%T)"
+# grim -g "$(slurp)" ~/Downloads/$FILENAME.png
+
+bindsym Print exec ~/bin/screenshot
 
 #
 # Scratchpad:
