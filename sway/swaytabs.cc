@@ -18,25 +18,29 @@ const char *jq = "/usr/bin/jq";
 
 [[noreturn]] void run_swaymsg(int out)
 {
-  dup2(out, STDOUT_FILENO);
+  if (-1 == dup2(out, STDOUT_FILENO)) {
+    std::cerr << "Failed to dup2 for swaymsg: " << strerror(errno) << std::endl;
+    exit(EXIT_FAILURE);
+  }
   execl(swaymsg, swaymsg, "-t", "get_tree", NULL);
-  exit(1);
+  std::cerr << "Failed to run swaymsg: " << strerror(errno) << std::endl;
+  exit(EXIT_FAILURE);
 }
 
-std::pair<bool,int> recurse(const simdjson::dom::element&elem, std::vector<std::string>&stack)
+std::pair<bool,int> recurse(const simdjson::dom::element&elem, std::vector<char>&stack)
 {
   if (static_cast<bool>(elem["focused"])) {
     int parents = 0;
     for (int i = stack.size()-1; i>=0; i--) {
       parents++;
-      if (stack[i] == "tabbed") {
+      if (stack[i]) {
 	return std::make_pair(true,parents);
       }
     }
     return std::make_pair(true,0);
   }
   for (const auto& e : simdjson::dom::array(elem["nodes"])) {
-    stack.push_back(std::string(std::string_view(elem["layout"])));
+    stack.push_back(static_cast<std::string_view>(elem["layout"]) == "tabbed");
     auto res = recurse(e, stack);
     if (res.first) {
       return res;
@@ -81,7 +85,8 @@ int parent_simdjson()
   close(fd);
   simdjson::dom::parser parser;
   simdjson::dom::element json = parser.parse(jsons.data(), jsons.size());
-  std::vector<std::string> stack;
+  std::vector<char> stack;
+  stack.reserve(64);
   const auto ret = recurse(json, stack).second;
 
   // Check error code after parsing, to give swaymsg time to exit.
