@@ -1,6 +1,9 @@
-// Shell version (on my laptop): 50ms
+// Shell version (on my laptop): 50ms. 202M instructions.
 // No shell, but still exec of jq and swaymsg: 45ms.
 // No jq, still shelling out to swaymsg both for read and write: ~0.000s user, 0.007s real.
+//
+// All in-house: ~0.000s user, 0.002s real. 4M instructions (2M user)
+// 
 
 #include<simdjson.h>
 
@@ -8,23 +11,147 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include <sys/socket.h>
+#include <sys/un.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/uio.h>
 #include <unistd.h>
 #include <vector>
+#include <iostream>
 
 const char *swaymsg = "/usr/bin/swaymsg";
 const char *jq = "/usr/bin/jq";
 
-[[noreturn]] void run_swaymsg(int out)
+// Sway IPC types.
+constexpr int RUN_COMMAND = 0;
+constexpr int GET_TREE = 4;
+
+struct __attribute__((packed)) sway_header_t{
+  char magic[6] = {'i','3','-','i','p','c'};
+  uint32_t length;
+  uint32_t type;
+};
+
+class Sway {
+ public:
+  Sway();
+  Sway(const Sway&) = delete;
+  Sway(Sway&&) = delete;
+  Sway&operator=(const Sway&) = delete;
+  Sway&operator=(Sway&&) = delete;
+  ~Sway();
+
+  struct Parsed {
+    simdjson::dom::element elem;
+    // Pointer to vector since elem points into the data.
+    // Performance: shave off microseconds by using manual memory management?
+    std::unique_ptr<std::vector<char>> data;
+  };
+
+  Parsed get_tree();
+  void command(const std::string&);
+ private:
+  std::pair<uint32_t, std::vector<char>>read_packet();
+  simdjson::dom::parser parser_;
+  int fd_;
+};
+
+Sway::Sway()
+    :fd_(socket(PF_UNIX, SOCK_STREAM, 0))
 {
-  if (-1 == dup2(out, STDOUT_FILENO)) {
-    std::cerr << "Failed to dup2 for swaymsg: " << strerror(errno) << std::endl;
-    exit(EXIT_FAILURE);
+  if (fd_ == -1) {
+    throw std::runtime_error(std::string("failed create UNIX socket: ") + strerror(errno));
   }
-  execl(swaymsg, swaymsg, "-t", "get_tree", NULL);
-  std::cerr << "Failed to run swaymsg: " << strerror(errno) << std::endl;
-  exit(EXIT_FAILURE);
+  struct sockaddr_un sa{};
+  sa.sun_family = AF_UNIX;
+  strncpy(sa.sun_path,getenv("SWAYSOCK"), sizeof(sa.sun_path));
+
+  if (connect(fd_, reinterpret_cast<struct sockaddr*>(&sa), sizeof(sa))) {
+    auto err = errno;
+    close(fd_);
+    throw std::runtime_error(std::string("failed to connect() to sway: ") + strerror(err));
+  }
+}
+
+void Sway::command(const std::string&cmds)
+{
+  sway_header_t head;
+  head.type = RUN_COMMAND;
+  head.length = cmds.size();
+  struct iovec iov[2];
+  iov[0].iov_base=static_cast<void*>(&head);
+  iov[1].iov_base=(void*)cmds.data();
+
+  size_t written = 0;
+  const size_t total = sizeof(head) + cmds.size();
+  do {
+    iov[0].iov_len = std::max(size_t(0), sizeof(head)-written);
+    iov[1].iov_len = written<=sizeof(head) ? cmds.size() : (cmds.size() + sizeof(head) - written);
+    const auto rc = writev(fd_, iov, 2);
+    if (rc == -1) {
+      throw std::runtime_error(std::string("writev() to sway: ") + strerror(errno));
+    }
+    written+=rc;
+  } while (written!=total);
+
+  // Check for success.
+  //
+  // Parsing is overkill here. Just look for anything that isn't success.
+  const auto reply = read_packet();
+  const char e[] = "false"; // "success": false
+  if (memmem(reply.second.data(), reply.second.size(),
+	     e,sizeof e)) {
+    throw std::runtime_error(std::string("commands failed: ") + std::string(reply.second.begin(), reply.second.end()));
+  }
+}
+
+
+Sway::~Sway()
+{
+  if (fd_ != -1) {
+    close(fd_);
+  }
+}
+
+std::pair<uint32_t, std::vector<char>> Sway::read_packet()
+{
+  // Read header.
+  sway_header_t header;
+  {
+    const auto rc = read(fd_, reinterpret_cast<void*>(&header), sizeof(header));
+    if (rc != sizeof(header)) {
+      throw std::runtime_error(std::string("read(header): ") +strerror(errno));
+    }
+  }
+  std::vector<char> buf;
+  buf.resize(header.length); // Performance microopt: needless zeroing.
+
+  size_t n = header.length; 
+  for (char *p = buf.data();n;) {
+    const auto rc = read(fd_, p, n);
+    if (rc == -1) {
+      throw std::runtime_error(std::string("read(data): ") + strerror(errno));
+    }
+    n-=rc;
+    p+=rc;
+  }
+  return std::make_pair((uint32_t)header.type, std::move(buf));
+}
+
+
+Sway::Parsed Sway::get_tree()
+{
+  sway_header_t req;
+  req.length = 0;
+  req.type = GET_TREE;
+  const auto rc = write(fd_, reinterpret_cast<void*>(&req), sizeof(req));
+  
+  auto reply = read_packet();
+  Parsed ret;
+  ret.data = std::make_unique<std::vector<char>>(std::move(reply.second));
+  ret.elem = parser_.parse(ret.data->data(), ret.data->size());
+  return ret;
 }
 
 std::pair<bool,int> recurse(const simdjson::dom::element&elem, std::vector<char>&stack)
@@ -50,55 +177,11 @@ std::pair<bool,int> recurse(const simdjson::dom::element&elem, std::vector<char>
   return std::make_pair(false,0);
 }
 
-int parent_simdjson()
+int parent_simdjson(const Sway::Parsed& json)
 {
-  int swaypipe[2];
-  if (-1 == pipe(swaypipe)) {
-    throw std::runtime_error(std::string("pipe(): ") + strerror(errno));
-  }
-  
-  const auto swaypid = fork();
-  if (swaypid == -1) {
-    // leaks fds, but we're exiting anyway.
-    throw std::runtime_error(std::string("fork(): ") + strerror(errno));
-  }
-
-  if (swaypid == 0) {
-    run_swaymsg(swaypipe[1]);
-  }
-  close(swaypipe[1]);
-
-  int fd = swaypipe[0];
-  std::vector<char> jsons;
-  for (;;) {
-    std::array<char, 4096> buf;
-    const auto rc = read(fd, buf.data(), buf.size());
-    if (rc == -1) {
-      // leaks fds, but we're exiting anyway.
-      throw std::runtime_error(std::string("read(): ") + strerror(errno));
-    }
-    if (rc == 0) {
-      break;
-    }
-    std::copy(buf.data(), buf.data()+rc, std::back_inserter(jsons));
-  }
-  close(fd);
-  simdjson::dom::parser parser;
-  simdjson::dom::element json = parser.parse(jsons.data(), jsons.size());
   std::vector<char> stack;
   stack.reserve(64);
-  const auto ret = recurse(json, stack).second;
-
-  // Check error code after parsing, to give swaymsg time to exit.
-  // Micro-optimization.
-  int status;
-  if (-1 == waitpid(swaypid, &status, 0)) {
-    throw std::runtime_error(std::string("waitpid(): ") + strerror(errno));
-  }
-  if (!WIFEXITED(status) || WEXITSTATUS(status)) {
-    throw std::runtime_error("swaymsg did not exit cleanly");
-  }
-  return ret;
+  return recurse(json.elem, stack).second;
 }
 
 int main(int argc, char** argv)
@@ -109,15 +192,14 @@ int main(int argc, char** argv)
     std::cerr << "Extra args on command line. Only one arg for Sway commands allowed\n";
     exit(EXIT_FAILURE);
   }
-
-  for (int i = parent_simdjson(); i; i--) {
+  Sway sway;
+  
+  for (int i = parent_simdjson(sway.get_tree()); i; i--) {
     cmds += "focus parent,";
   }
 
   if (argc == 2) {
     cmds += argv[1];
   }
-  execl(swaymsg,swaymsg,cmds.c_str(), nullptr);
-  std::cerr << "Failed to exec <" << swaymsg << ">: " << strerror(errno) << std::endl;
-  exit(EXIT_FAILURE);
+  sway.command(cmds);
 }
