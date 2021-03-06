@@ -34,6 +34,45 @@ struct __attribute__((packed)) sway_header_t {
     uint32_t type;
 };
 
+// A faster version of std::vector, because it doesn't do init.
+// Main gain is that since it (unlike std::vector) isuncopyable, we know that we won't
+// copy.
+template <typename T>
+class Buffer
+{
+public:
+    static_assert(std::is_trivial<T>(), "Buffer only handles trivial types");
+
+    Buffer(size_t size) : buf_(new T[size]), size_(size) {}
+    Buffer(Buffer&& rhs) noexcept
+        : buf_(std::exchange(rhs.buf_, nullptr)), size_(rhs.size_)
+    {
+    }
+
+    // No copy.
+    Buffer(const Buffer&) = delete;
+    Buffer& operator=(const Buffer&) = delete;
+
+    Buffer& operator=(Buffer&& rhs) noexcept = delete;
+    /*  Buffer&operator=(Buffer&&rhs) noexcept
+    {
+      delete[] buf_;
+      buf_ = std::exchange(rhs.buf_, nullptr);
+      size_ = rhs.size_;
+      return *this;
+      }*/
+    ~Buffer() { delete[] buf_; }
+    T* data() const noexcept { return buf_; }
+    const T* begin() const noexcept { return buf_; }
+    const T* end() const noexcept { return buf_ + size_; }
+    size_t size() const noexcept { return size_; }
+
+private:
+    T* buf_;
+    const size_t size_;
+};
+
+
 class Sway
 {
 public:
@@ -48,14 +87,14 @@ public:
         simdjson::dom::element elem;
         // Pointer to vector since elem points into the data.
         // Performance: shave off microseconds by using manual memory management?
-        std::unique_ptr<std::vector<char>> data;
+        std::unique_ptr<Buffer<char>> data;
     };
 
     Parsed get_tree();
     void command(const std::string&);
 
 private:
-    std::pair<uint32_t, std::vector<char>> read_packet();
+    std::pair<uint32_t, Buffer<char>> read_packet();
     simdjson::dom::parser parser_;
     int fd_;
 };
@@ -69,7 +108,11 @@ Sway::Sway() : fd_(socket(PF_UNIX, SOCK_STREAM, 0))
     struct sockaddr_un sa {
     };
     sa.sun_family = AF_UNIX;
-    strncpy(sa.sun_path, getenv("SWAYSOCK"), sizeof(sa.sun_path));
+    const auto fn = getenv("SWAYSOCK");
+    if (!fn) {
+        throw std::runtime_error("SWAYSOCK not set");
+    }
+    strncpy(sa.sun_path, fn, sizeof(sa.sun_path));
 
     if (connect(fd_, reinterpret_cast<struct sockaddr*>(&sa), sizeof(sa))) {
         auto err = errno;
@@ -120,7 +163,7 @@ Sway::~Sway()
     }
 }
 
-std::pair<uint32_t, std::vector<char>> Sway::read_packet()
+std::pair<uint32_t, Buffer<char>> Sway::read_packet()
 {
     // Read header.
     sway_header_t header;
@@ -130,8 +173,7 @@ std::pair<uint32_t, std::vector<char>> Sway::read_packet()
             throw std::runtime_error(std::string("read(header): ") + strerror(errno));
         }
     }
-    std::vector<char> buf;
-    buf.resize(header.length); // Performance microopt: needless zeroing.
+    Buffer<char> buf(header.length);
 
     size_t n = header.length;
     for (char* p = buf.data(); n;) {
@@ -155,7 +197,7 @@ Sway::Parsed Sway::get_tree()
 
     auto reply = read_packet();
     Parsed ret;
-    ret.data = std::make_unique<std::vector<char>>(std::move(reply.second));
+    ret.data = std::make_unique<Buffer<char>>(std::move(reply.second));
     ret.elem = parser_.parse(ret.data->data(), ret.data->size());
     return ret;
 }
