@@ -21,9 +21,6 @@
 #include <string>
 #include <vector>
 
-const char* swaymsg = "/usr/bin/swaymsg";
-const char* jq = "/usr/bin/jq";
-
 // Sway IPC types.
 constexpr int RUN_COMMAND = 0;
 constexpr int GET_TREE = 4;
