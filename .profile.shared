@@ -101,7 +101,7 @@ unalias n 2>/dev/null || true
 function a() { tmux a -t "$1"; }
 function n() { tmux new -s "$1"; }
 function l() { tmux ls; }
-
+function v() { img2sixel "$1"; }
 # Export.
 export PATH
 export EDITOR
