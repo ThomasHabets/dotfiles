@@ -110,10 +110,13 @@ bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. 
 # Moving around:
 #
 # Move your focus around
-bindsym $mod+$left  exec ~/.config/sway/focus_tab_parent 'focus left'
-bindsym $mod+$down  exec ~/.config/sway/focus_tab_parent 'focus down'
-bindsym $mod+$up    exec ~/.config/sway/focus_tab_parent 'focus up'
-bindsym $mod+$right exec ~/.config/sway/focus_tab_parent 'focus right'
+bindsym $mod+$left        exec ~/.config/sway/focus_tab_parent 'focus left'
+bindsym $mod+$down        exec ~/.config/sway/focus_tab_parent 'focus down'
+bindsym $mod+$up          exec ~/.config/sway/focus_tab_parent 'focus up'
+bindsym $mod+$right       exec ~/.config/sway/focus_tab_parent 'focus right'
+bindsym $mod+Tab          exec ~/.config/sway/next_tab
+bindsym $mod+Shift+Tab    exec ~/.config/sway/next_tab --prev
+
 # Or use $mod+[up|down|left|right]
 bindsym $mod+Left focus left
 bindsym $mod+Down focus down
@@ -188,8 +191,6 @@ bindsym $mod+space focus mode_toggle
 
 # Move focus to the parent container
 bindsym $mod+a focus parent
-bindsym $mod+Tab focus next
-bindsym $mod+Shift+Tab focus prev
 
 #
 # Scratchpad:

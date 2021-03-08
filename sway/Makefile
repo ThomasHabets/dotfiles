@@ -1,8 +1,12 @@
 CXX=clang++
-CXXFLAGS=-g -Os -march=native -mtune=native
-TARGETS=focus_tab_parent
-all: $(TARGETS)
+CXXFLAGS=
+TARGETS=focus_tab_parent next_tab
+CXXFLAGS=-I$(HOME)/opt/simdjson/include -g -Os -march=native -mtune=native -Wall -Wpedantic
+LDFLAGS=-L$(HOME)/opt/simdjson/lib -Wl,-rpath,$(HOME)/opt/simdjson/lib
+all: swaylib.o $(TARGETS)
+%.o: %.cc
+	$(CXX) -c $(CXXFLAGS) -o $@ $<
 %: %.cc
-	$(CXX) -I$(HOME)/opt/simdjson/include -L$(HOME)/opt/simdjson/lib -Wl,-rpath,$(HOME)/opt/simdjson/lib -o $@ $< -lsimdjson
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $< swaylib.o -lsimdjson
 clean:
 	rm -f $(TARGETS)
