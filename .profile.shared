@@ -92,6 +92,13 @@ case `uname -s` in
         ;;
 esac
 
+# 'foot' is rarely installed, yet has its own TERM
+if [ "$TERM" = "foot" ]; then
+    if ! infocmp > /dev/null 2>&1; then
+	export TERM=xterm
+    fi
+fi
+
 #
 # Tmux stuff
 #
