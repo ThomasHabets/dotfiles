@@ -1,5 +1,5 @@
 AC_PREREQ(2.61)
-AC_INIT(arping, 0.01, thomas@habets.se)
+AC_INIT(swaytools, 0.01, thomas@habets.se)
 AC_CANONICAL_SYSTEM
 AC_CONFIG_SRCDIR([src/swaylib.cc])
 AM_INIT_AUTOMAKE
@@ -13,7 +13,7 @@ AC_PROG_INSTALL
 
 #AC_CHECK_LIB([simdjson], [simdjson::builtin_implementation])
 
-LDFLAGS+=" -lsimdjson"
+LIBS+=" -lsimdjson"
 CXXFLAGS+=" -Os -mtune=native -march=native"
 
 AC_CONFIG_FILES([Makefile])
