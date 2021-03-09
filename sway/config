@@ -2,7 +2,7 @@
 #
 # Logo key. Use Mod1 for Alt.
 set $mod Mod4
-
+set $alt Mod1
 
 # Home row direction keys, like vim, but dvorak-mapped.
 set $left h
@@ -116,6 +116,18 @@ bindsym $mod+$up          exec ~/.config/sway/focus_tab_parent 'focus up'
 bindsym $mod+$right       exec ~/.config/sway/focus_tab_parent 'focus right'
 bindsym $mod+Tab          exec ~/.config/sway/next_tab
 bindsym $mod+Shift+Tab    exec ~/.config/sway/next_tab --prev
+for_window [app_id="foot"] bindsym {
+	$alt+1             exec ~/.config/sway/next_tab --absolute=0
+	$alt+2             exec ~/.config/sway/next_tab --absolute=1
+	$alt+3             exec ~/.config/sway/next_tab --absolute=2
+	$alt+4             exec ~/.config/sway/next_tab --absolute=3
+	$alt+5             exec ~/.config/sway/next_tab --absolute=4
+	$alt+6             exec ~/.config/sway/next_tab --absolute=5
+	$alt+7             exec ~/.config/sway/next_tab --absolute=6
+	$alt+8             exec ~/.config/sway/next_tab --absolute=7
+	$alt+9             exec ~/.config/sway/next_tab --absolute=8
+	$alt+0             exec ~/.config/sway/next_tab --absolute=9
+}
 
 # Or use $mod+[up|down|left|right]
 bindsym $mod+Left focus left

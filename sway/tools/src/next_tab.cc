@@ -1,27 +1,27 @@
-#include "swaylib.h"
-
 #include <getopt.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-#include <string>
 
+#include <iostream>
+#include <string>
+#include <utility>
 #include <vector>
 
-// Return current id and other tabs.
-std::pair<uint64_t, std::vector<uint64_t>>
-recurse(const simdjson::dom::element& elem,
-        const std::vector<uint64_t>& parent_tabs,
-        int parent_index = -1)
+#include "swaylib.h"
+
+namespace {
+bool verbose = false;
+}
+
+// Return index of current tab, and pids of all tabs.
+std::pair<int, std::vector<uint64_t>> recurse(const simdjson::dom::element& elem,
+                                              const std::vector<uint64_t>& parent_tabs,
+                                              int parent_index = -1)
 {
     if (static_cast<bool>(elem["focused"])) {
         // Found focused window.
         // std::cout << "Found focused " << parent_tabs.size() << "\n";
         // If not in tab, do nothing.
         if (parent_tabs.empty()) {
-            return std::make_pair(-1, std::vector<uint64_t>{});
+            return std::make_pair(0, std::vector<uint64_t>{});
         }
         return std::make_pair(parent_index, parent_tabs);
     }
@@ -48,16 +48,18 @@ recurse(const simdjson::dom::element& elem,
             return res;
         }
     }
-    return std::make_pair(false, std::vector<uint64_t>{});
+    return std::make_pair(0, std::vector<uint64_t>{});
 }
 
-int tab_pid(const Sway::Parsed& json, bool relative, int ofs)
+// Return the tab pid to change to, or 0 for "no change".
+uint64_t tab_pid(const Sway::Parsed& json, bool relative, int ofs)
 {
     std::vector<uint64_t> tabs;
     auto vals = recurse(json.elem, tabs);
-    if (false) {
-        std::cout << "active pid: " << vals.first << "\npids (" << vals.second.size()
-                  << ")\n";
+    if (verbose) {
+        std::cout << "active pid: " << vals.first << "\n"
+                  << " requested relative=" << relative << " ofs=" << ofs << "\n"
+                  << "pids (" << vals.second.size() << ")\n";
         for (const auto& pid : vals.second) {
             std::cout << " " << pid << std::endl;
         }
@@ -71,30 +73,45 @@ int tab_pid(const Sway::Parsed& json, bool relative, int ofs)
 
 int main(int argc, char** argv)
 {
-    struct option long_options[] = { { "prev", no_argument, 0, 0 }, { 0, 0, 0, 0 } };
+    struct option long_options[] = {
+        { "absolute", required_argument, 0, 'a' },
+        { "prev", no_argument, 0, 'p' },
+        { "verbose", required_argument, 0, 'v' },
+        { 0, 0, 0, 0 },
+    };
     int c;
     bool relative = true;
     int ofs = 1;
-    int option_index = 0;
-    while ((c = getopt_long(argc, argv, "", long_options, &option_index)) != -1) {
+    while ((c = getopt_long(argc, argv, "", long_options, nullptr)) != -1) {
+        std::cout << c << std::endl;
         switch (c) {
-        case 0:
-            switch (option_index) {
-            case 0:
-                relative = true;
-                ofs = -1;
-            }
+        case 'a':
+            relative = false;
+            ofs = atoi(optarg);
+            break;
+        case 'p':
+            relative = true;
+            ofs = -1;
+            break;
+        case 'v':
+            verbose = true;
+            break;
+        default:
+            std::cerr << "Unrecognized argument(s)\n";
+            exit(EXIT_FAILURE);
         }
     }
     std::string cmds;
     cmds.reserve(1000);
     if (argc > 2) {
-        std::cerr
-            << "Extra args on command line. Only one arg for Sway commands allowed\n";
+        std::cerr << "Extra args on command line. Only one arg for Sway commands "
+                     "allowed\n";
         exit(EXIT_FAILURE);
     }
 
     Sway sway;
-    sway.command(std::string("[pid=") +
-                 std::to_string(tab_pid(sway.get_tree(), relative, ofs)) + "] focus");
+    const auto tab = tab_pid(sway.get_tree(), relative, ofs);
+    if (tab > 0) {
+        sway.command("[pid=" + std::to_string(tab) + "] focus");
+    }
 }
