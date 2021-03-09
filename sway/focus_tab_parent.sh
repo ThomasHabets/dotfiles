@@ -6,7 +6,8 @@
 set -e
 BASE="$(dirname "$0")"
 
-DEPTH=$(swaymsg -t get_tree | jq -f "$BASE/focus_path.jq")
+DEPTH_ORIG=$(swaymsg -t get_tree | jq -f "$BASE/focus_path.jq")
+DEPTH=$DEPTH_ORIG
 COMMANDS=()
 if [[ "$DEPTH" != "null" ]]; then
   while true; do
@@ -15,9 +16,17 @@ if [[ "$DEPTH" != "null" ]]; then
       break
     fi
     DEPTH=$((DEPTH-1))
+    if [[ ${#COMMANDS[@]} -gt 10 ]]; then
+      echo "focus_parent_tab: too much depth: $DEPTH_ORIG" >&2
+      break
+    fi
   done
 fi  
 while [[ ! "$1" = "" ]]; do
+  if [[ ${#COMMANDS[@]} -gt 10 ]]; then
+    echo "focus_parent_tab: too much depth: $DEPTH_ORIG" >&2
+    break
+  fi
   COMMANDS+=("$1")
   shift
 done
