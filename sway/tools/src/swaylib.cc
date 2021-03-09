@@ -1,6 +1,6 @@
 #include "swaylib.h"
-#include <simdjson.h>
 
+#include <simdjson.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
@@ -9,6 +9,7 @@
 #include <sys/un.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
 #include <array>
 #include <iostream>
 #include <string>
@@ -23,7 +24,6 @@ struct __attribute__((packed)) sway_header_t {
     uint32_t length;
     uint32_t type;
 };
-
 
 Sway::Sway() : fd_(socket(PF_UNIX, SOCK_STREAM, 0))
 {
@@ -81,7 +81,6 @@ void Sway::command(const std::string& cmds)
     }
 }
 
-
 Sway::~Sway()
 {
     if (fd_ != -1) {
@@ -112,7 +111,6 @@ std::pair<uint32_t, Buffer<char>> Sway::read_packet()
     }
     return std::make_pair((uint32_t)header.type, std::move(buf));
 }
-
 
 Sway::Parsed Sway::get_tree()
 {

@@ -1,15 +1,12 @@
 // Shell version (on my laptop): 50ms. 202M instructions.
 // No shell, but still exec of jq and swaymsg: 45ms.
-// No jq, still shelling out to swaymsg both for read and write: ~0.000s user, 0.007s
-// real.
+// No jq, still shelling out to swaymsg both for read and write: ~0.000s user,
+// 0.007s real.
 //
 // All in-house: ~0.000s user, 0.002s real. 4M instructions (2M user)
 //
 
-#include "swaylib.h"
-
 #include <simdjson.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
@@ -18,10 +15,13 @@
 #include <sys/un.h>
 #include <sys/wait.h>
 #include <unistd.h>
+
 #include <array>
 #include <iostream>
 #include <string>
 #include <vector>
+
+#include "swaylib.h"
 
 std::pair<bool, int> recurse(const simdjson::dom::element& elem, std::vector<char>& stack)
 {
@@ -58,8 +58,8 @@ int main(int argc, char** argv)
     std::string cmds;
     cmds.reserve(1000);
     if (argc > 2) {
-        std::cerr
-            << "Extra args on command line. Only one arg for Sway commands allowed\n";
+        std::cerr << "Extra args on command line. Only one arg for Sway commands "
+                     "allowed\n";
         exit(EXIT_FAILURE);
     }
     Sway sway;

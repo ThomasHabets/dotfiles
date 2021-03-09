@@ -1,7 +1,7 @@
 // -*- c++ -*-
 // A faster version of std::vector, because it doesn't do init.
-// Main gain is that since it (unlike std::vector) isuncopyable, we know that we won't
-// copy.
+// Main gain is that since it (unlike std::vector) isuncopyable, we know that we
+// won't copy.
 #include <simdjson.h>
 
 #include <cstdint>
@@ -40,7 +40,6 @@ private:
     T* buf_;
     const size_t size_;
 };
-
 
 class Sway
 {
