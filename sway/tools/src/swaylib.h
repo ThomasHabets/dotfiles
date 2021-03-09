@@ -1,11 +1,11 @@
 // -*- c++ -*-
-// A faster version of std::vector, because it doesn't do init.
-// Main gain is that since it (unlike std::vector) isuncopyable, we know that we
-// won't copy.
 #include <simdjson.h>
 
 #include <cstdint>
 
+// A faster version of std::vector, because it doesn't do init.
+// Main gain is that since it (unlike std::vector) isuncopyable, we know that we
+// won't copy.
 template <typename T>
 class Buffer
 {
@@ -23,13 +23,18 @@ public:
     Buffer& operator=(const Buffer&) = delete;
 
     Buffer& operator=(Buffer&& rhs) noexcept = delete;
-    /*  Buffer&operator=(Buffer&&rhs) noexcept
+    /*
+    This was not actually used, so commented out for now so that I'll know
+    when I'll start using it.
+
+      Buffer&operator=(Buffer&&rhs) noexcept
     {
       delete[] buf_;
       buf_ = std::exchange(rhs.buf_, nullptr);
       size_ = rhs.size_;
       return *this;
-      }*/
+      }
+    */
     ~Buffer() { delete[] buf_; }
     T* data() const noexcept { return buf_; }
     const T* begin() const noexcept { return buf_; }
@@ -54,8 +59,7 @@ public:
     struct Parsed {
         simdjson::dom::element elem;
         // Pointer to vector since elem points into the data.
-        // Performance: shave off microseconds by using manual memory management?
-        std::unique_ptr<Buffer<char>> data;
+        Buffer<char> data;
     };
 
     Parsed get_tree();

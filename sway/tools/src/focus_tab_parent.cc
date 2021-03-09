@@ -23,6 +23,10 @@
 
 #include "swaylib.h"
 
+// Return pair of:
+// * true if in a tabbed container
+// * number of levels to go up to focus on the tabbing container (0 if not in tabbing
+//   container)
 std::pair<bool, int> recurse(const simdjson::dom::element& elem, std::vector<char>& stack)
 {
     if (static_cast<bool>(elem["focused"])) {
@@ -46,6 +50,7 @@ std::pair<bool, int> recurse(const simdjson::dom::element& elem, std::vector<cha
     return std::make_pair(false, 0);
 }
 
+// return number of levels a tabbing container is "up", or 0 if not in a tabbing container
 int parent_simdjson(const Sway::Parsed& json)
 {
     std::vector<char> stack;

@@ -123,8 +123,9 @@ Sway::Parsed Sway::get_tree()
     }
 
     auto reply = read_packet();
-    Parsed ret;
-    ret.data = std::make_unique<Buffer<char>>(std::move(reply.second));
-    ret.elem = parser_.parse(ret.data->data(), ret.data->size());
+    Parsed ret{
+        .data = std::move(reply.second),
+    };
+    ret.elem = parser_.parse(ret.data.data(), ret.data.size());
     return ret;
 }
