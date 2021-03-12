@@ -28,7 +28,20 @@ std::pair<int, std::vector<uint64_t>> recurse(const simdjson::dom::element& elem
     std::vector<uint64_t> mytabs;
     if (static_cast<std::string_view>(elem["layout"]) == "tabbed") {
         for (const auto& e : simdjson::dom::array(elem["nodes"])) {
-            mytabs.push_back(e["pid"]);
+            // Find the first leaf node under this tab.
+            //
+            // This assumes that any node in the graph that doesn't have a pid is
+            // a container that has at least one child node.
+            std::function<uint64_t(const simdjson::dom::element& elem)> f = [&](
+                const auto& elem) -> auto
+            {
+                uint64_t v;
+                if (elem["pid"].get(v)) {
+                    return f(simdjson::dom::array(elem["nodes"]).at(0));
+                }
+                return v;
+            };
+            mytabs.push_back(f(e));
         }
     }
     bool count_index = false;
