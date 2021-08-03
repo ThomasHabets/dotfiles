@@ -9,7 +9,6 @@
 
 namespace {
 bool verbose = false;
-}
 
 // Return index of current tab, and ids of all tabs.
 std::pair<int, std::vector<uint64_t>> recurse(const simdjson::dom::element& elem,
@@ -83,20 +82,38 @@ uint64_t tab_id(const Sway::Parsed& json, bool relative, int ofs)
     return vals
         .second[(vals.second.size() + relative * vals.first + ofs) % vals.second.size()];
 }
+} // namespace
+
+void usage(const char* argv0, int err)
+{
+    auto& o = [err]() -> std::ostream& {
+        if (err) {
+            return std::cerr;
+        }
+        return std::cout;
+    }();
+    o << "Usage: " << argv0 << " [options]\n"
+      << "Options:\n"
+      << "  -a, --absolute  Jump to absolute tab number\n"
+      << "  -h, --help      Show this help text\n"
+      << "  -p, --prev      Jump backwards\n"
+      << "  -v, --verbose   Show verbose output\n";
+    exit(err);
+}
 
 int main(int argc, char** argv)
 {
     struct option long_options[] = {
         { "absolute", required_argument, 0, 'a' },
+        { "help", no_argument, 0, 'h' },
         { "prev", no_argument, 0, 'p' },
-        { "verbose", required_argument, 0, 'v' },
+        { "verbose", no_argument, 0, 'v' },
         { 0, 0, 0, 0 },
     };
     int c;
     bool relative = true;
     int ofs = 1;
-    while ((c = getopt_long(argc, argv, "", long_options, nullptr)) != -1) {
-        std::cout << c << std::endl;
+    while ((c = getopt_long(argc, argv, "ahpv", long_options, nullptr)) != -1) {
         switch (c) {
         case 'a':
             relative = false;
@@ -109,9 +126,11 @@ int main(int argc, char** argv)
         case 'v':
             verbose = true;
             break;
+        case 'h':
+            usage(argv[0], 0);
         default:
             std::cerr << "Unrecognized argument(s)\n";
-            exit(EXIT_FAILURE);
+            usage(argv[0], EXIT_FAILURE);
         }
     }
     std::string cmds;
