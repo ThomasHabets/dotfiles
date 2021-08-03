@@ -11,7 +11,7 @@ namespace {
 bool verbose = false;
 }
 
-// Return index of current tab, and pids of all tabs.
+// Return index of current tab, and ids of all tabs.
 std::pair<int, std::vector<uint64_t>> recurse(const simdjson::dom::element& elem,
                                               const std::vector<uint64_t>& parent_tabs,
                                               int parent_index = -1)
@@ -30,13 +30,13 @@ std::pair<int, std::vector<uint64_t>> recurse(const simdjson::dom::element& elem
         for (const auto& e : simdjson::dom::array(elem["nodes"])) {
             // Find the first leaf node under this tab.
             //
-            // This assumes that any node in the graph that doesn't have a pid is
+            // This assumes that any node in the graph that doesn't have a id is
             // a container that has at least one child node.
             std::function<uint64_t(const simdjson::dom::element& elem)> f = [&](
                 const auto& elem) -> auto
             {
                 uint64_t v;
-                if (elem["pid"].get(v)) {
+                if (elem["id"].get(v)) {
                     return f(simdjson::dom::array(elem["nodes"]).at(0));
                 }
                 return v;
@@ -64,17 +64,17 @@ std::pair<int, std::vector<uint64_t>> recurse(const simdjson::dom::element& elem
     return std::make_pair(0, std::vector<uint64_t>{});
 }
 
-// Return the tab pid to change to, or 0 for "no change".
-uint64_t tab_pid(const Sway::Parsed& json, bool relative, int ofs)
+// Return the tab id to change to, or 0 for "no change".
+uint64_t tab_id(const Sway::Parsed& json, bool relative, int ofs)
 {
     std::vector<uint64_t> tabs;
     auto vals = recurse(json.elem, tabs);
     if (verbose) {
-        std::cout << "active pid: " << vals.first << "\n"
+        std::cout << "active id: " << vals.first << "\n"
                   << " requested relative=" << relative << " ofs=" << ofs << "\n"
-                  << "pids (" << vals.second.size() << ")\n";
-        for (const auto& pid : vals.second) {
-            std::cout << " " << pid << std::endl;
+                  << "ids (" << vals.second.size() << ")\n";
+        for (const auto& id : vals.second) {
+            std::cout << " " << id << std::endl;
         }
     }
     if (vals.second.empty()) {
@@ -123,8 +123,8 @@ int main(int argc, char** argv)
     }
 
     Sway sway;
-    const auto tab = tab_pid(sway.get_tree(), relative, ofs);
+    const auto tab = tab_id(sway.get_tree(), relative, ofs);
     if (tab > 0) {
-        sway.command("[pid=" + std::to_string(tab) + "] focus");
+        sway.command("[con_id=" + std::to_string(tab) + "] focus");
     }
 }
