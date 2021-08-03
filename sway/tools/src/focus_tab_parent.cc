@@ -6,7 +6,9 @@
 // All in-house: ~0.000s user, 0.002s real. 4M instructions (2M user)
 //
 
+#include <getopt.h>
 #include <simdjson.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
@@ -23,6 +25,7 @@
 
 #include "swaylib.h"
 
+namespace {
 // Return pair of:
 // * true if in a tabbed container
 // * number of levels to go up to focus on the tabbing container (0 if not in tabbing
@@ -58,17 +61,46 @@ int parent_simdjson(const Sway::Parsed& json)
     return recurse(json.elem, stack).second;
 }
 
+void usage(const char* argv0, int err)
+{
+    auto& o = [err]() -> std::ostream& {
+        if (err) {
+            return std::cerr;
+        }
+        return std::cout;
+    }();
+    o << "Usage: " << argv0 << " [options] <sway command>\n"
+      << "Options:\n"
+      << "  -h, --help      Show this help text\n";
+    exit(err);
+}
+} // namespace
+
 int main(int argc, char** argv)
 {
-    std::string cmds;
-    cmds.reserve(1000);
-    if (argc > 2) {
+    struct option long_options[] = {
+        { "help", no_argument, 0, 'h' },
+        { 0, 0, 0, 0 },
+    };
+    int c;
+
+    while ((c = getopt_long(argc, argv, "h", long_options, nullptr)) != -1) {
+        switch (c) {
+        case 'h':
+            usage(argv[0], 0);
+        }
+    }
+
+    if (argc > optind + 1) {
         std::cerr << "Extra args on command line. Only one arg for Sway commands "
                      "allowed\n";
-        exit(EXIT_FAILURE);
+        usage(argv[0], EXIT_FAILURE);
     }
+
     Sway sway;
 
+    std::string cmds;
+    cmds.reserve(1000);
     for (int i = parent_simdjson(sway.get_tree()); i; i--) {
         cmds += "focus parent,";
     }
