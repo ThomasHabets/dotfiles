@@ -13,8 +13,8 @@ AC_PROG_INSTALL
 
 #AC_CHECK_LIB([simdjson], [simdjson::builtin_implementation])
 
-LIBS+=" -lsimdjson"
-CXXFLAGS+=" -Os -mtune=native -march=native -Wall -Wpedantic"
+LIBS="$LIBS -lsimdjson"
+CXXFLAGS="$CXXFLAGS -Os -mtune=native -march=native -Wall -Wpedantic"
 
 AC_CONFIG_FILES([Makefile])
 AC_OUTPUT

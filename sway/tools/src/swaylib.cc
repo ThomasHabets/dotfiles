@@ -34,11 +34,19 @@ Sway::Sway() : fd_(socket(PF_UNIX, SOCK_STREAM, 0))
     struct sockaddr_un sa {
     };
     sa.sun_family = AF_UNIX;
-    const auto fn = getenv("SWAYSOCK");
-    if (!fn) {
-        throw std::runtime_error("SWAYSOCK not set");
+    const auto fn = [] ()-> std::string {
+      for (const auto& env : std::vector<std::string>{"SWAYSOCK", "I3SOCK"}) {
+	const auto ret = getenv(env.c_str());
+	if (ret) {
+	  return ret;
+	}
+      }
+      return "";
+    }();
+    if (fn.empty()) {
+        throw std::runtime_error("SWAYSOCK/I3SOCK not set");
     }
-    strncpy(sa.sun_path, fn, sizeof(sa.sun_path));
+    strncpy(sa.sun_path, fn.c_str(), sizeof(sa.sun_path));
 
     if (connect(fd_, reinterpret_cast<struct sockaddr*>(&sa), sizeof(sa))) {
         auto err = errno;

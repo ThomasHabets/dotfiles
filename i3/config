@@ -13,6 +13,7 @@
 # is used in the bar {} block below.
 font pango:monospace 8
 set $mod Mod4
+set $alt Mod1
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
 # text rendering and scalability on retina/hidpi displays (thanks to pango).
 #font pango:DejaVu Sans Mono 8
@@ -61,10 +62,24 @@ bindsym $mod+d exec --no-startup-id dmenu_run
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
 
 # change focus
-bindsym $mod+$left focus left
-bindsym $mod+$down focus down
-bindsym $mod+$up focus up
-bindsym $mod+$right focus right
+bindsym $mod+$left        exec ~/.config/i3/focus_tab_parent 'focus left'
+bindsym $mod+$down        exec ~/.config/i3/focus_tab_parent 'focus down'
+bindsym $mod+$up          exec ~/.config/i3/focus_tab_parent 'focus up'
+bindsym $mod+$right       exec ~/.config/i3/focus_tab_parent 'focus right'
+bindsym $mod+Tab         exec ~/.config/i3/next_tab
+bindsym $mod+Shift+Tab   exec ~/.config/i3/next_tab --prev
+#for_window [instance="^st.*"] {
+#	$alt+1             exec ~/.config/i3/next_tab --absolute=0
+#	$alt+2             exec ~/.config/i3/next_tab --absolute=1
+#	$alt+3             exec ~/.config/i3/next_tab --absolute=2
+#	$alt+4             exec ~/.config/i3/next_tab --absolute=3
+#	$alt+5             exec ~/.config/i3/next_tab --absolute=4
+#	$alt+6             exec ~/.config/i3/next_tab --absolute=5
+#	$alt+7             exec ~/.config/i3/next_tab --absolute=6
+#	$alt+8             exec ~/.config/i3/next_tab --absolute=7
+#	$alt+9             exec ~/.config/i3/next_tab --absolute=8
+#	$alt+0             exec ~/.config/i3/next_tab --absolute=9
+#}
 
 # alternatively, you can use the cursor keys:
 bindsym $mod+Left focus left
