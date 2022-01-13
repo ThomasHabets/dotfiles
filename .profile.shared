@@ -125,8 +125,10 @@ if [ -e "$HOME/.profile.local" ]; then
 fi
 export SSH_AUTH_SOCK="$HOME/var/run/ssh-agent.sock"
 
-export MOZ_ENABLE_WAYLAND=1
-export GDK_BACKEND=wayland,x11
-
+if [ ! "${WAYLAND_DISPLAY}" = "" ]; then
+   export MOZ_ENABLE_WAYLAND=1
+   export GDK_BACKEND=wayland,x11
+   unset SWAYSOCK
+fi
 # FUCK YOU SYSTEMD
 loginctl enable-linger $(whoami) 2> /dev/null
