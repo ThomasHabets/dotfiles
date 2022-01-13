@@ -229,7 +229,7 @@ bindsym --locked XF86MonBrightnessUp   exec light -A 5
 bindsym --locked XF86MonBrightnessDown exec light -U 5
 
 # Locking
-bindsym $mod+BackSpace exec "swaylock -f -K -c 000000 --indicator-radius 300 --indicator-thickness 80 && systemctl suspend"
+bindsym $mod+BackSpace exec "swaylock -f -K -c 000000 --indicator-radius 300 --indicator-thickness 80 && /home/habets/bin/suspend"
 bindsym $mod+l exec $lock
 
 #
