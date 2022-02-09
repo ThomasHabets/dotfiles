@@ -23,7 +23,7 @@ if [ ! "" = "$PS1" ]; then
 
     # set a fancy prompt (non-color, unless we know we "want" color)
     case "$TERM" in
-        foot|xterm-color|*-256color|screen) color_prompt=yes;;
+        foot|xterm|xterm-color|*-256color|screen) color_prompt=yes;;
     esac
 
     # Don't allow others to write to terminal.
