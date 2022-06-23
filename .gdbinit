@@ -30,6 +30,14 @@ define th-si
   th-dis
 end
 
+define th-tracefile
+  rbreak $arg0
+  commands
+    silent
+    bt 1
+    continue
+  end
+end
 
 # Command tips:
 #
