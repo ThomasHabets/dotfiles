@@ -1,5 +1,6 @@
 #include <getopt.h>
 
+#include <functional>
 #include <iostream>
 #include <string>
 #include <utility>
