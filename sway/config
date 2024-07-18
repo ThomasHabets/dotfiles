@@ -80,6 +80,7 @@ input "*" {
 ### Key bindings
 bindsym $mod+Return exec $term
 bindsym $mod+c exec $HOME/bin/chrome
+bindsym $mod+comma exec $HOME/bin/browser-bank
 
 # Screenshot
 #
