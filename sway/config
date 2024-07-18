@@ -25,7 +25,7 @@ exec $HOME/bin/start-ssh-agent
 #
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
 #output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
-output * bg $HOME/.config/sway/bg.jpg fill
+#output * bg $HOME/.config/sway/bg.jpg fill
 
 # Look
 for_window [tiling] title_format "%title — %shell"
