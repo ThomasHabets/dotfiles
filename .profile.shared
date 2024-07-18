@@ -18,6 +18,9 @@ if [ ! "" = "$PS1" ]; then
     # Unbreak C-s for incremental search.
     stty -ixon
 
+    # Unbreaks glob crossing case.
+    shopt -s globasciiranges
+
     # Autocorrect directories.
     shopt -s cdspell
 
