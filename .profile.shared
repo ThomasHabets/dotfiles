@@ -30,7 +30,7 @@ if [ ! "" = "$PS1" ]; then
     esac
 
     # Don't allow others to write to terminal.
-    mesg n
+    mesg n 2>/dev/null
 
     if [ "$BASH" ]; then
         if [ "$color_prompt" = yes ]; then
