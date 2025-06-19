@@ -10,6 +10,7 @@ set pagination off
 
 # "Are you sure you want to quit?"
 set confirm off
+set auto-detach on
 
 # Don't hickup on thread creation.
 handle SIG32 noprint pass
